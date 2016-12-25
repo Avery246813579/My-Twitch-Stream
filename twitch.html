@@ -7,12 +7,6 @@
 <body>
 
 <script>
-    if(typeof QueryString.code == "undefined"){
-        console.log("AHH");
-    }else{
-        localStorage.code = QueryString.code;
-    }
-
     var QueryString = function () {
         // This function is anonymous, is executed immediately and
         // the return value is assigned to QueryString!
@@ -35,6 +29,12 @@
         }
         return query_string;
     }();
+
+    if(typeof QueryString.code == "undefined"){
+        console.log("AHH");
+    }else{
+        localStorage.code = QueryString.code;
+    }
 </script>
 
 </body>
