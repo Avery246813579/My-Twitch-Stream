@@ -3,118 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <title>My Twitch Stream</title>
+
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            font-family: Abeezee, sans-serif;
+        }
+
+        html, body {
+            min-height: 100% !important;
+            height: 100%;
+            overflow: hidden;
+        }
+
+    </style>
 </head>
 <body>
 
+<div id="FRAME"></div>
+<img src="http://ttv-api.s3.amazonaws.com/assets/connect_dark.png" class="twitch-connect" href="#"/>
 <a href="https://api.twitch.tv/kraken/oauth2/authorize?response_type=code&client_id=gxf6yv4dro02sb5m0tc9jmb3wak4vk&redirect_uri=https://avery246813579.github.io/My-Twitch-Stream/twitch.html&scope=user_read">Login</a>
+<script src="https://code.jquery.com/jquery.min.js"></script>
 
 <script>
-    function sendSimpleRequest(route, method, body, payback) {
-        var request = new XMLHttpRequest();
+    var streams = [
+        {name: "loltyler1", priority: 5},
+        {name: "summit1g", priority: 2},
+        {name: "tsm_dyrus", priority: 3}
+    ];
 
-        if (window.location.href.indexOf('localhost:8081') > -1) {
-            request.open(method.toUpperCase(), "https://api.twitch.tv/kraken/" + route);
+    var FRAME = document.getElementById('FRAME');
+    var LAST;
+    factor();
+    function factor() {
+        var highest, most = -1, done = 0;
+        for (var i = 0; i < streams.length; i++) {
+            (function () {
+                var stream = streams[i];
 
-            request.setRequestHeader("Content-type", "application/json");
-            request.setRequestHeader('Client-ID', "gxf6yv4dro02sb5m0tc9jmb3wak4vk");
-
-            if (typeof body == "undefined" || body == null) {
-                try {
-                    request.send();
-                } catch (Exception) {
-
-                }
-            } else {
-                request.send(JSON.stringify(body));
-            }
-
-            request.onreadystatechange = function () {
-                if (request.readyState === 4) {
-                    if (request.status === 200) {
-                        var response = JSON.parse(request.responseText);
-
-                        payback(undefined, response);
-                    } else {
-                        console.log(request.statusText)
+                streamOnline(stream['name'], function (callback) {
+                    if (callback) {
+                        if (stream['priority'] > most) {
+                            highest = stream;
+                            most = stream['priority'];
+                        }
                     }
-                }
-            }
-        } else if ("withCredentials" in request) {
 
-            // Check if the XMLHttpRequest object has a "withCredentials" property.
-            // "withCredentials" only exists on XMLHTTPRequest2 objects.
+                    done++;
 
-            request.open(method, "https://api.twitch.tv/kraken/" + route, true);
-            request.setRequestHeader("Content-type", "application/json");
-            request.setRequestHeader('Client-ID', "gxf6yv4dro02sb5m0tc9jmb3wak4vk");
-            request.withCredentials = true;
+                    if (streams.length == done) {
+                        if (typeof highest != "undefined") {
+                            if(typeof LAST == "undefined" || LAST != highest) {
+                                FRAME.innerHTML = '<iframe src="http://player.twitch.tv/?channel=' + highest['name'] + '" height="' + getHeight() + '" width="' + getWidth() + '" frameborder="0" scrolling="false" allowfullscreen="true" autoplay="true"> </iframe>';
+                            }else{
+                                console.log("No new stream");
+                            }
 
-            if (typeof body == "undefined" || body == null) {
-                try {
-                    request.send();
-                } catch (Exception) {
-                    payback(Exception);
-                }
-            } else {
-                request.send(JSON.stringify(body));
-            }
+                            LAST = highest;
+                        }
 
-            request.onreadystatechange = function () {
-                if (request.readyState === 4) {
-                    if (request.status === 200) {
-                        var response = JSON.parse(request.responseText);
-
-                        payback(undefined, response);
-                    } else {
-                        console.log(request.statusText)
                     }
-                }
-            }
-        } else if (typeof XDomainRequest != "undefined") {
-
-            // Otherwise, check if XDomainRequest.
-            // XDomainRequest only exists in IE, and is IE's way of making CORS requests.
-            request = new XDomainRequest();
-
-            request.open(method, "https://api.twitch.tv/kraken/" + route);
-            request.setRequestHeader("Content-type", "application/json");
-            request.setRequestHeader('Client-ID', "gxf6yv4dro02sb5m0tc9jmb3wak4vk");
-
-            if (typeof body == "undefined" || body == null) {
-                try {
-                    request.send();
-                } catch (Exception) {
-                    payback(Exception);
-                }
-            } else {
-                request.send(JSON.stringify(body));
-            }
-
-            request.onreadystatechange = function () {
-                if (request.readyState === 4) {
-                    if (request.status === 200) {
-                        var response = JSON.parse(request.responseText);
-
-                        payback(undefined, response);
-                    } else {
-                        console.log(request.statusText)
-                    }
-                }
-            }
-        } else {
-            payback("We can't CORS", response);
-            request = null;
+                });
+            })();
         }
     }
 
-    if(typeof localStorage.code != "undefined"){
-        sendSimpleRequest('channels/test_channel', 'GET', {client_id: "gxf6yv4dro02sb5m0tc9jmb3wak4vk", client_secret: "fyz6v6ycwm393q3v23bwaejlyg31su", grant_type: "authorization_code", redirect_uri: "https://avery246813579.github.io/My-Twitch-Stream/twitch.html", code: localStorage.code}, function(err, payload){
-            if(err){
-                console.dir(err);
-            }
+    setInterval(factor, 30 * 1000);
 
-            console.dir(payload);
-        })
+    function streamOnline(name, callback) {
+        $.ajax({
+            type: 'GET',
+            url: 'https://api.twitch.tv/kraken/streams/' + name,
+            headers: {
+                'Client-ID': 'gxf6yv4dro02sb5m0tc9jmb3wak4vk'
+            },
+            success: function (data) {
+                if (data['stream'] == null) {
+                    callback(false);
+                } else {
+                    callback(true);
+                }
+            }
+        });
+    }
+
+
+    function getWidth() {
+        if (self.innerWidth) {
+            return self.innerWidth;
+        }
+
+        if (document.documentElement && document.documentElement.clientWidth) {
+            return document.documentElement.clientWidth;
+        }
+
+        if (document.body) {
+            return document.body.clientWidth;
+        }
+    }
+
+    function getHeight() {
+        if (self.innerHeight) {
+            return self.innerHeight;
+        }
+
+        if (document.documentElement && document.documentElement.clientHeight) {
+            return document.documentElement.clientHeight;
+        }
+
+        if (document.body) {
+            return document.body.clientHeight;
+        }
     }
 </script>
 
