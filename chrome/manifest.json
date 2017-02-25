@@ -1,0 +1,41 @@
+{
+  "manifest_version": 2,
+  "name": "My Twitch Stream",
+  "version": "1.0.0",
+  "description": "A new way to sort streams.",
+  "icons": {
+    "16": "img/icon_16x16.png",
+    "48": "img/icon_48x48.png",
+    "128": "img/icon_128x128.png"
+  },
+  "browser_action": {
+    "default_icon": {
+      "16": "img/icon_16x16.png",
+      "48": "img/icon_48x48.png",
+      "128": "img/icon_128x128.png"
+    },
+    "default_title": "MyTwitchStream",
+    "default_popup": "index.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://twitch.tv/*",
+        "*://*.twitch.tv/*"
+      ],
+      "js": [
+        "index.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "permissions": [
+    "tabs",
+    "contextMenus",
+    "unlimitedStorage",
+    "notifications",
+    "storage"
+  ],
+  "homepage_url": "https://github.com/Avery246813579/My-Twitch-Stream",
+  "author": "Avery Durrant"
+}
