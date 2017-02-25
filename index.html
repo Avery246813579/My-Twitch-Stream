@@ -14,7 +14,6 @@
         html, body {
             min-height: 100% !important;
             height: 100%;
-            overflow: hidden;
         }
 
     </style>
@@ -22,8 +21,8 @@
 <body>
 
 <div id="FRAME"></div>
-<img src="http://ttv-api.s3.amazonaws.com/assets/connect_dark.png" class="twitch-connect" href="#"/>
-<a href="https://api.twitch.tv/kraken/oauth2/authorize?response_type=code&client_id=gxf6yv4dro02sb5m0tc9jmb3wak4vk&redirect_uri=https://avery246813579.github.io/My-Twitch-Stream/twitch.html&scope=user_read">Login</a>
+<!--<img src="http://ttv-api.s3.amazonaws.com/assets/connect_dark.png" class="twitch-connect" href="#"/>-->
+<!--<a href="https://api.twitch.tv/kraken/oauth2/authorize?response_type=code&client_id=gxf6yv4dro02sb5m0tc9jmb3wak4vk&redirect_uri=https://avery246813579.github.io/My-Twitch-Stream/twitch.html&scope=user_read">Login</a>-->
 <script src="https://code.jquery.com/jquery.min.js"></script>
 
 <script>
@@ -55,19 +54,34 @@
                     if (streams.length == done) {
                         if (typeof highest != "undefined") {
                             if(typeof LAST == "undefined" || LAST != highest) {
-                                FRAME.innerHTML = '<iframe src="http://player.twitch.tv/?channel=' + highest['name'] + '" height="' + getHeight() + '" width="' + getWidth() + '" frameborder="0" scrolling="false" allowfullscreen="true" autoplay="true"> </iframe>';
+                                FRAME.innerHTML = '<iframe id="FRAME" style="float: left" src="http://player.twitch.tv/?channel=' + highest['name'] + '" height="' + getHeight() + '" width="' + (getWidth() - 345) + '" frameborder="0" scrolling="false" allowfullscreen="true" autoplay="true"> </iframe>';
+                                FRAME.innerHTML += '<iframe style="float: left; position: absolute;" frameborder="0" scrolling="no" id="chat_embed" src="http://www.twitch.tv/' + highest['name'] + '/chat" height="' + getHeight() + '" width="335"> </iframe>';
                             }else{
                                 console.log("No new stream");
                             }
 
                             LAST = highest;
-                        }
 
+                        }
                     }
                 });
             })();
         }
     }
+
+    window.onresize = function(event){
+        var FRAME = document.getElementById('FRAME');
+
+        if(typeof FRAME != "undefined"){
+            console.dir(FRAME);
+            FRAME.children[0].width = getWidth() - 345;
+            FRAME.children[0].height = getHeight();
+            FRAME.children[1].height = getHeight();
+            FRAME.children[1].style.left = getWidth() - 345;
+
+            console.log(FRAME.width + " " + FRAME.height)
+        }
+    };
 
     setInterval(factor, 30 * 1000);
 
