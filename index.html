@@ -36,6 +36,7 @@
 
 <div id="CONTENT">
     STUFF SHOULD BE HERE
+
 </div>
 
 <!--<img src="http://ttv-api.s3.amazonaws.com/assets/connect_dark.png" class="twitch-connect" href="#"/>-->
@@ -63,9 +64,11 @@
 
     updateMethod(function () {
         if (typeof ONLINE_STREAM != "undefined" && ONLINE_STREAM != LAST_ONLINE_STREAM) {
-            FRAME.innerHTML = '<iframe id="FRAME" style="float: left" src="https://player.twitch.tv/?channel=' + ONLINE_STREAM['NAME'] + '" height="' + getHeight() + '" width="' + (getWidth() - 350) + '" frameborder="0" scrolling="false" allowfullscreen="true" autoplay="true"> </iframe>';
-            FRAME.innerHTML += '<iframe style="float: left; top:0; position: absolute;" frameborder="0" scrolling="no" id="chat_embed" src="https://www.twitch.tv/' + ONLINE_STREAM['NAME'] + '/chat" height="' + getHeight() + '" width="335"> </iframe>';
-        }else if(typeof LAST_ONLINE_STREAM != "undefined" && typeof ONLINE_STREAM == "undefined"){
+
+            FRAME.innerHTML = '<iframe id="FRAME" style="float: left" src="https://player.twitch.tv/?channel=' + ONLINE_STREAM['NAME'] + '" height="' + getHeight() + '" width="' + (getWidth() - 368) + '" frameborder="0" scrolling="false" allowfullscreen="true" autoplay="true"> </iframe>';
+//            FRAME.innerHTML += '<iframe style="float: left; position: absolute;" frameborder="0" scrolling="no" id="chat_embed" src="http://www.twitch.tv/summit1g/chat" height="500" width="350"></iframe>';
+            FRAME.innerHTML += '<iframe style="float: left;" frameborder="0" scrolling="yes" id="chat_embed" src="https://www.twitch.tv/' + STREAM_DATA['stream']['channel']['display_name']+ '/chat" height="' + getHeight() + '" width="350"> </iframe>';
+        } else if (typeof LAST_ONLINE_STREAM != "undefined" && typeof ONLINE_STREAM == "undefined") {
             FRAME.innerHTML = "No streams online! Scroll down to add some!";
         }
     });
@@ -73,10 +76,11 @@
     window.onresize = function (event) {
         if (typeof FRAME != "undefined") {
             console.dir(FRAME);
-            FRAME.children[0].width = getWidth() - 350;
+            FRAME.children[0].width = getWidth() - 368;
             FRAME.children[0].height = getHeight();
             FRAME.children[1].height = getHeight();
-            FRAME.children[1].style.left = getWidth() - 350;
+
+            console.dir(FRAME.children[1].style.position);
         }
     };
 

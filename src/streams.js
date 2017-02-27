@@ -5,7 +5,7 @@ function streamOnline(name, callback) {
             return;
         }
 
-        callback(true);
+        callback(true, data);
     });
 }
 
@@ -88,20 +88,21 @@ function updateStream(name, payload) {
 }
 
 function findMostFit(callback) {
-    var STREAM, TOP = -1, ITERATED = 0;
+    var STREAM, STREAM_DATA, TOP = -1, ITERATED = 0;
     for (var i = 0; i < STREAMS.length; i++) {
         (function () {
             var stream = STREAMS[i];
-            streamOnline(stream['NAME'], function (online) {
+            streamOnline(stream['NAME'], function (online, data) {
                 if (online && stream['PRIORITY'] > TOP) {
                     STREAM = stream;
+                    STREAM_DATA = data;
                     TOP = STREAM['PRIORITY'];
                 }
 
                 ITERATED++;
 
                 if (ITERATED == STREAMS.length) {
-                    callback(STREAM);
+                    callback(STREAM, data);
                 }
             });
         })();
